@@ -27,3 +27,59 @@ iscroll-infinite.js(iScroll无限滚动版)，一个简单的解释就是用有�
 其中build文件夹里面是iScroll作者发布的各版本源码，他们都没有被压缩过。如果你要在项目中使用某个版本，请记得把他们压缩后在发布哦。
 demos里面是iScroll各个强大功能的代表实例。你可以在浏览器当中运行这些例子，对iScroll的功能有个直观了解。当然，如果你对iScroll的某些配置不熟悉，也可以在demos里面找到参考实例。
 src里面就是iScroll的源代码了，也是本书要和大家一起重点研究学习的地方。
+src文件夹里代码结构如下:
+## TODO src文件夹结构
+src 
+ |
+ |__default
+ |__indicator
+ |__infinite
+ |__keys
+ |__probe
+
+有三个文件需要我们注意： open.js,core.js,close.js。如果看一下这三个文件的内容，我们发现，他们都不是完整的函数模块，不能直接运行。这算是iScroll的一个特色吧。
+这是open.js
+```
+(function (window, document, Math) {
+
+```
+
+这是close.js
+```
+
+IScroll.utils = utils;
+
+if ( typeof module != 'undefined' && module.exports ) {
+	module.exports = IScroll;
+} else {
+	window.IScroll = IScroll;
+}
+
+})(window, document, Math);
+```
+单独看这两个文件好像没有任何意义，但是当把他们的内容组合起来，似乎可以看出门道了
+```
+(function (window, document, Math) {
+IScroll.utils = utils;
+if ( typeof module != 'undefined' && module.exports ) {
+	module.exports = IScroll;
+} else {
+	window.IScroll = IScroll;
+}
+
+})(window, document, Math);
+
+```
+原来iScroll的功能拆分不是通过常见的独立模块，而是通过将整个js文件按照头部，内容，和尾部来拆分。所以open.js(头)，close.js(尾)，core.js(内容)组成了Iscroll的基本骨架。然后根据需要打包的目标文件，和其他功能模块进行内容组合，就得到了最终的iScroll-xxx.js。
+我们来尝试自己编译一个iscroll版本吧。首先删除build目录下的iscroll-lite.js文件。在iscroll根目录下，运行 node build.js lite。命令运行完成后，在build目录下又重新出现了iscroll-lite.js文件。
+这个命令做的事情其实非常简单，就是将open.js, utils.js, core.js, default/_animate.js, default/handleEvent.js, close.js这些文件的内容按照顺序组合在一起。有了iscroll-lite.js文件，就让我们开始iScroll的源码解读之旅吧。
+
+当然，你也可以试试打包其他版本的iscroll
+试试这些命令，看看能得到什么结果吧。
+node build.js iscroll
+node build.js zoom
+node build.js probe
+node build.js infinite
+node build.js dist
+
+备注：iscroll其他版本的打包逻辑比lite版本要复杂一点，我们将在以后的章节中讲到[TODO]
