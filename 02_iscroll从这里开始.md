@@ -46,6 +46,19 @@ if ( this.isInTransition ) {
 	this._translate(Math.round(pos.x), Math.round(pos.y));
 }
 
+[TODO]
+this.startX    = this.x;
+this.startY    = this.y;
+这是四个非常重要的变量，理解他们的含义是理解整个IScroll功能的基础。我们知道对touch事件的监测是放在wrapper上的。在wrapper层，获得手指的相对位移很简单，只需要把两次连续的touchmove事件的位置相减即可。而scroller的移动是需要绝对位移的，也就是是说，scroller需要一个基准点(x,y)，只要把wrapper上的相对位移和scroller的基准点相加，就能得到scroller的绝对位移。this.x，this.y就是scroller的这个基准点。每当wrapper上有手指滑动位移时，this.x，this.y就会被更新，从而带动scroller产生滚动的效果。
+this.startX和this.startY用来保存一次滚动开始时的基准点位置。这样，通过this.x - this.startX就能获得scroller在x轴的滚动距离。
 
+[todo 配图scroller left-top坐标点]
 
+this.pointX    = point.pageX;
+this.pointY    = point.pageY;
 
+point表示手指在wrapper上的位置信息。pointX，pointY用来记录第一次(或者上一次)手指在wrapper上的位置信息。假设现在手指在wrapper上的位置是point，那么
+point.pageX - this.pointX就是手指在wrapper上的x轴位移。把这个位移和scroller的位置信息this.x相加，就得到了scroller的新的位置信息。
+[tod 配图wrapper 手指接触的点]
+
+好了，_start方法我们就讲解完毕了。下面，我们看看让scroller滚动起来的核心方法_move。我们将会看到_move是怎么利用_start提供的数据来计算scroller的位移值，以及IScroll非常经典的滚动回弹效果和动量效果的实现。
